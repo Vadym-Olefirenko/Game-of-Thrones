@@ -1,37 +1,60 @@
-import React from 'react';
-import {Col, Row, Container} from 'reactstrap';
+import React, { Component } from 'react';
+import {Col, Row, Container, Button} from 'reactstrap';
+import './app.css'
 import Header from '../header/header';
 import RandomChar from '../randomChar/randomChar';
-import ItemList from '../itemList/itemList';
-import CharDetails from '../charDetails/charDetails';
-import Services from '../../services/services';
+import ErrorMess from '../error/error';
+import CharacterPage from '../characterPage/characterPage'
+
+export default class App extends Component {
+
+   state = {
+       showRandomChar: true,
+       error: false    
+   }
+
+   componentDidCatch() {
+       this.setState({
+           error: true
+       })
+   }
+
+   onToggleChar = () => {
+       this.setState(() => {
+           return {
+            showRandomChar: !this.state.showRandomChar
+           }
+       })
+   }
 
 
-const App = () => {
-    
-    return (
-        <> 
-            <Container>
-                <Header />
-            </Container>
-            <Container>
-                <Row>
-                    <Col lg={{size: 5, offset: 0}}>
-                        <RandomChar/>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md='6'>
-                        <ItemList />
-                    </Col>
-                    <Col md='6'>
-                        <CharDetails />
-                    </Col>
-                </Row>
-            </Container>
-        </>
-    )
-        
-};
+    render () {
 
-export default App;
+        const randomChar = this.state.showRandomChar ? <RandomChar/> : null;
+
+        if(this.state.error) {
+            return <ErrorMess/>
+        }
+
+        return (
+            <> 
+                <Container>
+                    <Header />
+                </Container>
+                <Container>
+                    <Row>
+                        <Col lg={{size: 5, offset: 0}}>
+                            <Button 
+                                onClick={this.onToggleChar}
+                                className="char-btn"
+                            >Random charachter</Button>
+                            {randomChar}
+                        </Col>
+                    </Row>
+                    <CharacterPage/>
+                </Container>
+            </>
+        )
+    }
+}
+
