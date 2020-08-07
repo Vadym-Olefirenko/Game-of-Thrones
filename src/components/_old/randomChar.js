@@ -1,37 +1,52 @@
-import React, {useEffect, useState} from 'react';
+import React, {Component} from 'react';
 import './randomChar.css';
 import Services from '../../services/services';
 import Spinner from '../spinner/spinner';
 import ErrorMess from '../error/error';
 
 
-function RandomChar() {
-    const service = new Services();
-    const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-
-    let setCharFunc = () => {
-        let id = Math.floor(Math.random()*140 + 25);
-        service.getChar(id)
-            .then((char) => {
-                setChar(char)
-            })
-            .then(setLoading(false))
-            .catch(() => setError(true))
+export default class RandomChar extends Component {
+    
+    service = new Services();
+    state = {
+        char: {},
+        loading: true,
+        error: false
     }
-   
-    useEffect(() => {
-        setCharFunc();
-        let changeChar = setInterval(() => {
-            setCharFunc();
-        }, 5000);
 
-        return () => {
-            clearInterval(changeChar);
-        }
-    }, []);
-   
+    componentDidMount() {
+        this.setChar();
+        this.changeChar = setInterval(() => {
+            this.setChar();
+        }, 5000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.changeChar);
+    }
+
+    onCharLoaded = char => {
+        this.setState({
+            char: char,
+            loading: false
+        });
+    }
+
+    onError = err => {
+        this.setState({
+            error: true,
+            loading: false
+        })
+    }
+
+    setChar = () => {
+        let id = Math.floor(Math.random()*140 + 25);
+        this.service.getChar(id)
+            .then(this.onCharLoaded)
+    }
+    render() {
+        const{char, loading, error} = this.state;
+
         const errorMessage = error ? <ErrorMess/> : null;
         const spin = loading ? <Spinner/> : null;
         const block = !(loading || error) ? <BlockLayout char={char}/> : null;
@@ -43,6 +58,7 @@ function RandomChar() {
                 {block}
             </div>
         );
+    }
 }
 
 const BlockLayout = ({char}) => {
@@ -71,5 +87,3 @@ const BlockLayout = ({char}) => {
         </>
     )
 }
-
-export default RandomChar;

@@ -1,3 +1,11 @@
 .char-btn {
     margin-bottom: 20px;
 }
+
+.app {
+    overflow-x: hidden;
+    background: url('got.jpeg') center center repeat;
+    background-size: cover;
+    font-size: 16px;
+    height: 100vh;	
+}
